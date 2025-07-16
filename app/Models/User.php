@@ -22,6 +22,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'roles',
+        'images',
+        'address',
+        'phoneNumber',
     ];
 
     /**
@@ -45,5 +49,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+     public function carts()
+    {
+        return $this->hasMany(Carts::class);
+    }
+
+    // Relasi ke Order (satu user bisa punya banyak order)
+    public function orders()
+    {
+        return $this->hasMany(orders::class);
     }
 }
