@@ -57,7 +57,7 @@ class ProductsResource extends Resource
                     ->label('Stok per Varian')
                     ->formatStateUsing(function ($state, $record) {
                         return $record->grouped_stok->map(function ($item) {
-                            return "{$item['color']} - {$item['size']}: {$item['stok_akhir']}";
+                            return "{$item['color']} - {$item['size']}: {$item['stock']}";
                         })->implode(', ');
                     })
                     ->wrap(),

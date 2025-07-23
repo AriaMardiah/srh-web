@@ -14,7 +14,10 @@ class Orders extends Model
         'total',
         'status',
     ];
-
+    protected $casts = [
+        'total' => 'integer', // Pastikan 'total' selalu menjadi integer
+        'user_id' => 'integer',
+    ];
     /**
      * Relasi ke user (order dimiliki oleh satu user)
      */
@@ -24,12 +27,10 @@ class Orders extends Model
     }
     public function order_details()
     {
-        return $this->hasMany(Order_details::class,'order_id');
+        return $this->hasMany(Order_details::class, 'order_id');
     }
     public function payments()
     {
-        return $this->hasMany(payments::class,'order_id');
+        return $this->hasMany(payments::class, 'order_id');
     }
-
-
 }

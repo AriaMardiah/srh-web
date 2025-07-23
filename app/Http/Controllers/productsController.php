@@ -11,18 +11,22 @@ class ProductsController extends Controller
     // Ambil semua produk
     // -------------------------------
     public function index()
-    {
-        $products = Products::all()->map(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'images' => url('storage/' . $product->images),
-                'description' => $product->description,
-                'price' => (float) $product->price, // Ubah jadi float
-            ];
-        });
-        return response()->json($products);
-    }
+{
+    // Gunakan eager loading 'with()' untuk mengambil produk beserta variasinya secara efisien
+    $products = Products::with('stocks')->get()->map(function ($product) {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            // 'image' bukan 'images'. Sesuaikan dengan nama kolom di database Anda.
+            'image' => url('storage/' . $product->images),
+            'price' => (int) $product->price,
+            'variations'  => $product->grouped_stok,
+        ];
+    });
+
+    return response()->json($products);
+}
 
 
     // -------------------------------

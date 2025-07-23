@@ -18,6 +18,7 @@ class Products extends Model
         'images',
         'description',
         'price',
+        'model_id',
     ];
 
     // Casting data
@@ -30,29 +31,34 @@ class Products extends Model
     }
     public function stocks()
     {
-        return $this->hasMany(stocks::class,'product_id');
+        return $this->hasMany(stocks::class, 'product_id');
     }
     public function carts()
     {
         return $this->hasMany(carts::class);
     }
+    public function model()
+    {
+        return $this->belongsTo(ModelRequest::class);
+    }
     public function getGroupedStokAttribute()
-{
-    return $this->stocks
-        ->groupBy(fn($item) => strtolower($item->color) . '-' . strtolower($item->size))
-        ->map(function ($group) {
-            $color = $group->first()->color;
-            $size  = $group->first()->size;
+    {
+        return $this->stocks
+            ->groupBy(fn($item) => strtolower($item->color) . '-' . strtolower($item->size))
+            ->map(function ($group) {
+                $firstItem = $group->first();
+                $color = $group->first()->color;
+                $size  = $group->first()->size;
 
-            $masuk  = $group->where(fn($s) => strtolower($s->status) === 'masuk')->sum('quantity');
-            $keluar = $group->where(fn($s) => strtolower($s->status) === 'keluar')->sum('quantity');
+                $masuk  = $group->where(fn($s) => strtolower($s->status) === 'masuk')->sum('quantity');
+                $keluar = $group->where(fn($s) => strtolower($s->status) === 'keluar')->sum('quantity');
 
-            return [
-                'color' => ucfirst(strtolower($color)),
-                'size' => strtoupper($size),
-                'stok_akhir' => $masuk - $keluar,
-            ];
-        })->values();
-}
-
+                return [
+                    'id' => $firstItem->id,
+                    'color' => ucfirst(strtolower($color)),
+                    'size' => strtoupper($size),
+                    'stock' => $masuk - $keluar,
+                ];
+            })->values();
+    }
 }
