@@ -15,7 +15,7 @@ return new class extends Migration
             $table->integer('id')->autoIncrement();
             $table->string('title',100);
             $table->text('description');
-            $table->string('file');
+            $table->string('file')->nullable();
             $table->enum('status',['diterima','ditolak','diproses']);
             $table->timestamps();
         });

@@ -10,11 +10,15 @@ class ModelRequest extends Model
     use HasFactory;
 
     protected $table = 'model_request';
-    protected $fillable = ['title','description','file','status'];
+    protected $fillable = ['title','description','file','status','user_id'];
 
     public function product()
     {
-        return $this->hasOne(Products::class);
+         return $this->hasOne(Products::class,'model_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
     }
 
 

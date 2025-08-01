@@ -31,7 +31,7 @@ class Products extends Model
     }
     public function stocks()
     {
-        return $this->hasMany(stocks::class, 'product_id');
+        return $this->hasMany(stocks::class, 'product_id','id');
     }
     public function carts()
     {
@@ -39,7 +39,7 @@ class Products extends Model
     }
     public function model()
     {
-        return $this->belongsTo(ModelRequest::class);
+        return $this->belongsTo(ModelRequest::class,'model_id');
     }
     public function getGroupedStokAttribute()
     {

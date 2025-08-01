@@ -23,22 +23,36 @@ class ProductsResource extends Resource
 {
     protected static ?string $model = Products::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                TextInput::make('model_id')
+                    ->default(fn() => request()->query('model_id'))
+                    ->disabled(),
+                TextInput::make('user_id')
+                    ->default(fn() => request()->query('user_id'))
+                    ->disabled(),
                 TextInput::make('name')
                     ->required()
-                    ->maxLength(30),
-                TextInput::make('price'),
-                TextInput::make('description'),
+                    ->maxLength(30)
+                    ->default(fn() => request()->query('name')),
+                TextInput::make('price')
+                    ->numeric()
+                    ->required()
+                    ->maxLength(6),
+                TextInput::make('description')
+                    ->default(fn() => request()->query('description'))
+                    ->required(),
                 FileUpload::make('images')
                     ->image()
+                    ->required()
                     ->imagePreviewHeight('150')
                     ->directory('products')
-                    ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp']),
+                    ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])
+                    ->default(fn() => $data['images'] ?? null),
             ]);
     }
 
@@ -52,7 +66,7 @@ class ProductsResource extends Resource
                 TextColumn::make('price')
                     ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.')),
                 TextColumn::make('description')
-                    ->wrap(),
+                    ->limit(50),
                 TextColumn::make('grouped_stok')
                     ->label('Stok per Varian')
                     ->formatStateUsing(function ($state, $record) {
@@ -61,6 +75,9 @@ class ProductsResource extends Resource
                         })->implode(', ');
                     })
                     ->wrap(),
+                TextColumn::make('model.user.name')
+                    ->label('Di request oleh')
+                    ->default(fn($record) => $record->model->user->name ?? 'Admin'),
 
                 TextColumn::make('created_at'),
                 TextColumn::make('updated_at'),

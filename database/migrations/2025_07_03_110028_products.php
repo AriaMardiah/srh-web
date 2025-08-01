@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->string('name', 30);
-            $table->string('images');
+            $table->string('images')->nullable();
             $table->text('description');
             $table->decimal('price', 8,2);
             $table->timestamps();

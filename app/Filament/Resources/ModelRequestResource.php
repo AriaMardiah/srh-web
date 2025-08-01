@@ -30,17 +30,17 @@ class ModelRequestResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                TextColumn::make('user.name')
+                    ->label('Nama Pengguna'),
                 ImageColumn::make('file')
-                    ->getStateUsing(fn($record) => asset('storage/' . $record->images))
+                    ->getStateUsing(fn($record) => asset('storage/' . $record->file))
                     ->label('Gambar'),
                 TextColumn::make('title')
                     ->label('Judul'),
@@ -73,6 +73,16 @@ class ModelRequestResource extends Resource
                         $record->update([
                             'status' => 'diterima'
                         ]);
+                    })
+                    ->after(function ($record) {
+                        return redirect()->to(
+                            route('filament.admin.resources.products.create', [
+                                'name' => $record->title,
+                                'description' => $record->description,
+                                'model_id' => $record->id,
+                                'user_id' => $record->user_id,
+                            ])
+                        );
                     }),
                 Action::make('Ditolak')
                     ->label('Ditolak')

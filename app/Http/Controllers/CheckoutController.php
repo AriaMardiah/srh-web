@@ -15,9 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    public function process(Request $request)
+    public function store(Request $request)
     {
-        // 1. Validasi input dari Flutter
         $validated = $request->validate([
             'payment_method' => 'required|in:cod,digital_payment',
             'items' => 'required|array',
@@ -25,76 +24,57 @@ class CheckoutController extends Controller
             'items.*.variation_id' => 'required|integer', // Asumsi ada ID unik untuk setiap variasi
             'items.*.quantity' => 'required|integer|min:1',
         ]);
-
-        $user = Auth::user();
-        $items = collect($validated['items']);
-        $totalPrice = 0;
-
-        // Gunakan DB Transaction untuk keamanan data
-        return DB::transaction(function () use ($user, $items, $validated) {
-
-            // 2. Hitung total harga dan validasi stok
-            $totalPrice = 0;
-            foreach ($items as $item) {
-                $product = Products::find($item['product_id']);
-
-                // TODO: Dapatkan variasi spesifik berdasarkan $item['variation_id']
-                // Lakukan validasi stok di sini. Jika stok tidak cukup, throw exception.
-                // $variation = ProductVariation::find($item['variation_id']);
-                // if ($variation->stock < $item['quantity']) {
-                //     throw new \Exception("Stok untuk produk {$product->name} tidak mencukupi.");
-                // }
-
-                $totalPrice += $product->price * $item['quantity'];
-            }
-
-            // 3. Tentukan status order berdasarkan metode pembayaran
-            $status = ($validated['payment_method'] === 'cod') ? 'Dikemas' : 'Belum Bayar';
-
-            // 4. Buat Order baru
-            $order = Orders::create([
-                'user_id' => $user->id,
-                'total' => $totalPrice,
-                'status' => $status,
-            ]);
-
-            // 5. Buat Order Details dan catat pergerakan stok
-            foreach ($items as $item) {
-                $order->orderDetails()->create([
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    // Anda mungkin perlu menyimpan detail variasi juga
-                ]);
-
-                // Kurangi stok dengan mencatat pergerakan 'keluar'
-                // TODO: Pastikan ini merujuk ke ID variasi yang benar
-                Stocks::create([
-                    'product_variation_id' => $item['variation_id'],
-                    'quantity' => $item['quantity'],
-                    'status' => 'keluar',
-                ]);
-            }
-
-            // 6. Logika untuk Metode Pembayaran
-            $paymentInfo = null;
-            if ($validated['payment_method'] === 'digital_payment') {
-                // --- INTEGRASI MIDTRANS ---
-                // Set Midtrans server key
-                // Config::$serverKey = config('services.midtrans.server_key');
-                // ... (konfigurasi lainnya) ...
-
-                // $params = [ ... data transaksi ... ];
-                // $snapToken = Snap::getSnapToken($params);
-                // $paymentInfo = ['snap_token' => $snapToken];
-                // Untuk sekarang kita simulasi saja
-                $paymentInfo = ['snap_url' => 'https://app.sandbox.midtrans.com/snap/v1/transactions/...'];
-            }
-
-            return response()->json([
-                'message' => 'Checkout berhasil!',
-                'order' => $order,
-                'payment_info' => $paymentInfo,
-            ], 201);
-        });
     }
+
+    //  public function handle(Request $request)
+    // {
+    //     // 1. Konfigurasi Midtrans
+    //     Config::$serverKey = config('midtrans.server_key');
+    //     Config::$isProduction = config('midtrans.is_production');
+
+    //     try {
+    //         // 2. Buat instance notifikasi dari input JSON
+    //         $notification = new Notification();
+
+    //         // 3. Ambil ID order dari notifikasi
+    //         // Kita perlu memisahkan timestamp yang kita tambahkan sebelumnya
+    //         $orderId = explode('-', $notification->order_id)[0];
+    //         $order = Orders::findOrFail($orderId);
+
+    //         // 4. Lakukan verifikasi signature key (keamanan)
+    //         // Ini untuk memastikan notifikasi benar-benar dari Midtrans
+    //         $signature = hash('sha512', $notification->order_id . $notification->status_code . $notification->gross_amount . config('midtrans.server_key'));
+    //         if ($signature !== $notification->signature_key) {
+    //             return response()->json(['message' => 'Invalid signature'], 403);
+    //         }
+
+    //         // 5. Handle status transaksi
+    //         $transactionStatus = $notification->transaction_status;
+    //         $fraudStatus = $notification->fraud_status;
+
+    //         if ($transactionStatus == 'capture') {
+    //             if ($fraudStatus == 'accept') {
+    //                 // Transaksi berhasil dan aman
+    //                 $order->status = 'Dikemas';
+    //             }
+    //         } else if ($transactionStatus == 'settlement') {
+    //             // Transaksi berhasil diselesaikan
+    //             $order->status = 'Dikemas';
+    //         } else if ($transactionStatus == 'pending') {
+    //             // Transaksi masih menunggu pembayaran
+    //             $order->status = 'Belum Bayar';
+    //         } else if ($transactionStatus == 'deny' || $transactionStatus == 'expire' || $transactionStatus == 'cancel') {
+    //             // Transaksi gagal atau dibatalkan
+    //             $order->status = 'Dibatalkan';
+    //         }
+
+    //         // 6. Simpan perubahan status order
+    //         $order->save();
+
+    //         // 7. Beri respons OK ke Midtrans
+    //         return response()->json(['message' => 'Notification handled successfully'], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
 }
