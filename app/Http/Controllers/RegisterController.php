@@ -14,10 +14,10 @@ class RegisterController extends Controller
         // Custom validasi manual untuk kontrol respons JSON lebih baik
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'roles' => 'required|string|in:customer',
             'phoneNumber' => 'required|string|max:15',
             'email' => 'required|string|email',
             'password' => 'required|string|min:6|confirmed',
+            'address' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -37,7 +37,8 @@ class RegisterController extends Controller
         // Buat user
         $user = User::create([
             'name' => $request->name,
-            'roles' => $request->roles,
+            'address' => $request->address,
+            'roles' => 'customer',
             'phoneNumber' => $request->phoneNumber,
             'email' => $request->email,
             'password' => bcrypt($request->password),

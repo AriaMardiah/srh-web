@@ -30,12 +30,9 @@ class ProductsResource extends Resource
         return $form
             ->schema([
                 TextInput::make('model_id')
-                    ->default(fn() => request()->query('model_id'))
-                    ->disabled(),
-                TextInput::make('user_id')
-                    ->default(fn() => request()->query('user_id'))
-                    ->disabled(),
+                    ->default(fn() => request()->query('model_id')),
                 TextInput::make('name')
+                    ->label('Nama Produk')
                     ->required()
                     ->maxLength(30)
                     ->default(fn() => request()->query('name')),

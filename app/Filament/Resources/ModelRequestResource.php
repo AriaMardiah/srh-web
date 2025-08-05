@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ModelRequestResource\Pages;
 use App\Filament\Resources\ModelRequestResource\RelationManagers;
 use App\Models\ModelRequest;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -80,7 +81,7 @@ class ModelRequestResource extends Resource
                                 'name' => $record->title,
                                 'description' => $record->description,
                                 'model_id' => $record->id,
-                                'user_id' => $record->user_id,
+                                'username' => $record->user->name,
                             ])
                         );
                     }),

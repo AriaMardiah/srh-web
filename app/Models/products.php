@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Products extends Model
 {
@@ -22,9 +23,11 @@ class Products extends Model
     ];
 
     // Casting data
-    protected $casts = [
-        'price' => 'decimal:2',
-    ];
+    // protected $casts = [
+    //     'price' => 'integer',
+    // ];
+
+
     public function order_details()
     {
         return $this->hasMany(order_details::class);

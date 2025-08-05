@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('user_id');
-            $table->decimal('total',10,2);
+            $table->unsignedInteger('total')->default(0);
             $table->enum('status',['Belum Bayar', 'Dikemas', 'Dikirim', 'Selesai']);
             $table->timestamps();
 

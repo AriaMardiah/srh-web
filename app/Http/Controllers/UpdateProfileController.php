@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class UpdateProfileController extends Controller
 {

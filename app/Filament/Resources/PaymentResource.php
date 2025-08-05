@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
 
 class PaymentResource extends Resource
 {
@@ -52,6 +53,33 @@ class PaymentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('status Pembayaran')
+                    ->label('Status Pembayaran')
+                    ->icon('heroicon-o-banknotes')
+                    ->color('success')
+                    // Hanya tampilkan tombol ini jika statusnya 'menunggu'
+                    ->visible(condition: fn($record) => $record->metode_pembayaran === 'cod' && $record->status_pembayaran === 'menunggu')
+                    // Minta konfirmasi dari user
+                    ->requiresConfirmation()
+                    ->modalHeading('Konfirmasi Pembayaran Produk')
+                    ->modalDescription('Apakah anda yakin produk sudah di bayar?')
+                    ->modalSubmitActionLabel('Ya')
+                    // Logika yang akan dijalankan saat tombol dikonfirmasi
+                    ->action(function ($record) {
+                        $record->update([
+                            'status_pembayaran' => 'selesai'
+                        ]);
+
+
+
+
+                        // Kirim notifikasi sukses
+                        // Notification::make()
+                        //     ->title('Pembayaran Diterima')
+                        //     ->body('Status pembayaran telah berhasil diubah menjadi "Selesai".')
+                        //     ->success()
+                        //     ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

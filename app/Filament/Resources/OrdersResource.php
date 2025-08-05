@@ -79,9 +79,9 @@ class OrdersResource extends Resource
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Action::make('status Barang')
-                    ->label('Status Barang')
+                    ->label('Kirim Pesanan')
                     ->icon('heroicon-o-truck')
-                    ->color('success')
+                    ->color('warning')
                     // Hanya tampilkan tombol ini jika statusnya 'menunggu'
                     ->visible(condition: fn($record) => $record->status === 'Dikemas')
                     // Minta konfirmasi dari user
@@ -101,21 +101,22 @@ class OrdersResource extends Resource
                         //     ->success()
                         //     ->send();
                     }),
-                Action::make('status Pembayaran')
-                    ->label('Status Pembayaran')
-                    ->icon('heroicon-o-banknotes')
-                    ->color('success')
+                
+                Action::make('status pesanan selesai')
+                    ->label('status pesanan selesai')
+                    ->icon('heroicon-o-check')
+                    ->color('info')
                     // Hanya tampilkan tombol ini jika statusnya 'menunggu'
-                    ->visible(condition: fn($record) => $record->status === 'Belum Bayar')
+                    ->visible(condition: fn($record) => $record->status === 'Dikirim')
                     // Minta konfirmasi dari user
                     ->requiresConfirmation()
-                    ->modalHeading('Konfirmasi Produk untuk')
-                    ->modalDescription('Apakah anda yakin produk menjadi status Dikirim?')
-                    ->modalSubmitActionLabel('Ya, Dikirim')
+                    ->modalHeading('Konfirmasi Produk sudah di antar')
+                    ->modalDescription('Apakah anda yakin produk sudah di antar?')
+                    ->modalSubmitActionLabel('Ya, sudah')
                     // Logika yang akan dijalankan saat tombol dikonfirmasi
                     ->action(function ($record) {
                         $record->update([
-                            'status' => 'Dikemas'
+                            'status' => 'Selesai'
                         ]);
 
 

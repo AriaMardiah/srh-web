@@ -38,7 +38,7 @@ public function index(Request $request)
             'product' => $productRequest->product ? [
                 'id' => $productRequest->product->id,
                 'name' => $productRequest->product->name,
-                'image' => url('storage/products/' . $productRequest->product->images),
+                'images' => url('storage/' . $productRequest->product->images),
             ] : null, // Jika tidak ada produk, kirim null
         ];
     });
