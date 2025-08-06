@@ -27,36 +27,36 @@ class CheckoutController extends Controller
             $item_details_midtrans = [];
 
             // 2. Validasi stok dan hitung total harga
-            foreach ($items as $item) {
-                $product = Products::find($item['product_id']);
+            // foreach ($items as $item) {
+            //     $product = Products::find($item['product_id']);
 
-                $variation = Stocks::find($item['variation_id']);
-                if (!$variation) {
-                    throw new \Exception("Variasi untuk produk {$product->name} tidak valid.");
-                }
+            //     $variation = Stocks::find($item['variation_id']);
+            //     if (!$variation) {
+            //         throw new \Exception("Variasi untuk produk {$product->name} tidak valid.");
+            //     }
 
-                // Lakukan validasi stok
-                if ($variation->stock > $item['quantity']) {
-                    throw new \Exception("Stok untuk produk {$product->name} (Ukuran: {$variation->size}, Warna: {$variation->color}) tidak mencukupi. Sisa {$variation->stock}.");
-                }
+            //     // Lakukan validasi stok
+            //     if ($variation->stock > $item['quantity']) {
+            //         throw new \Exception("Stok untuk produk {$product->name} (Ukuran: {$variation->size}, Warna: {$variation->color}) tidak mencukupi. Sisa {$variation->stock}.");
+            //     }
 
-                // Akumulasi total harga dan detail item untuk Midtrans
-                $price = (int) $product->price;
-                $quantity = (int) $item['quantity'];
-                $totalPrice += $price * $quantity;
+            //     // Akumulasi total harga dan detail item untuk Midtrans
+            //     $price = (int) $product->price;
+            //     $quantity = (int) $item['quantity'];
+            //     $totalPrice += $price * $quantity;
 
-                $item_details_midtrans[] = [
-                    'id' => $item['variation_id'],
-                    'price' => $price,
-                    'quantity' => $quantity,
-                    'name' => "{$product->name} ({$variation->size}/{$variation->color})",
-                ];
-            }
+            //     $item_details_midtrans[] = [
+            //         'id' => $item['variation_id'],
+            //         'price' => $price,
+            //         'quantity' => $quantity,
+            //         'name' => "{$product->name} ({$variation->size}/{$variation->color})",
+            //     ];
+            // }
 
-            // Validasi akhir untuk total harga
-            if ($totalPrice <= 0) {
-                throw new \Exception('Total harga transaksi tidak boleh nol.');
-            }
+            // // Validasi akhir untuk total harga
+            // if ($totalPrice <= 0) {
+            //     throw new \Exception('Total harga transaksi tidak boleh nol.');
+            // }
 
             // 3. Tentukan status order
             $status = ($request['payment_method'] === 'cod') ? 'Dikemas' : 'Belum Bayar';
@@ -65,7 +65,7 @@ class CheckoutController extends Controller
             // 4. Buat Order baru
             $order = Orders::create([
                 'user_id' => $user->id,
-                'total' => $totalPrice,
+                'total' => $request->total_price,
                 'status' => $status,
             ]);
 
@@ -103,7 +103,7 @@ class CheckoutController extends Controller
                         'email' => $user->email,
                         'phone' => $user->phone_number,
                     ],
-                    'item_details' => $item_details_midtrans,
+                    // 'item_details' => $item_details_midtrans,
                     "callbacks" => [
                         "finish" => "myapp://payment-finish"
                     ],
@@ -131,7 +131,7 @@ class CheckoutController extends Controller
                 'order' => $order,
                 'snap_token' => $isCod ? null : $snapToken,
                 'order_details' => $order->order_details,
-                'variations' => $product->grouped_stok,
+                // 'variations' => $product->grouped_stok,
             ], 201);
         });
     }
