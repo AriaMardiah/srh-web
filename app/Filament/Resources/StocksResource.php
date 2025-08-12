@@ -155,6 +155,7 @@ class StocksResource extends Resource
                     ]),
 
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('color')
                     ->label('Warna')

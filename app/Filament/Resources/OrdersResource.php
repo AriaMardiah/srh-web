@@ -66,6 +66,7 @@ class OrdersResource extends Resource
                 ])
                     ->label('Status Pembayaran'),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('status')
                     ->label('Status')
@@ -101,7 +102,7 @@ class OrdersResource extends Resource
                         //     ->success()
                         //     ->send();
                     }),
-                
+
                 Action::make('status pesanan selesai')
                     ->label('status pesanan selesai')
                     ->icon('heroicon-o-check')

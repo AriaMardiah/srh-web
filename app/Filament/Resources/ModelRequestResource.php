@@ -55,6 +55,7 @@ class ModelRequestResource extends Resource
                         'info' => 'diproses',
                     ]),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

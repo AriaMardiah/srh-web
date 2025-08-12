@@ -57,18 +57,17 @@ public function index(Request $request)
             ->with('product.stocks') // Eager load produk & variasinya
             ->whereHas('product') // Pastikan produknya masih ada
             ->get();
-
-        // 2. "Tarik keluar" hanya data produk dari setiap request.
-        //    'pluck' akan membuat koleksi baru yang hanya berisi objek produk.
         $products = $requests->pluck('product');
 
         // // 3. (Opsional tapi direkomendasikan) Format data produk agar konsisten
-        $formattedProducts = $products->map(function ($product) {
+        $formattedProducts = $requests->map(function ($request) {
+    $product = $request->product;
             return [
                 'id' => $product->id,
                 'name' => $product->name,
                 'description' => $product->description,
-                'image' => url('storage/' . $product->images),
+                'file_url' => $request->file ? url('storage/' . $request->file) : null,
+                'images' => url('storage/' . $product->images),
                 'price' => (int) $product->price,
                 'variations' => $product->grouped_stok,
             ];

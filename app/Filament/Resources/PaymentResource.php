@@ -48,6 +48,7 @@ class PaymentResource extends Resource
                     'gray' => 'kadaluarsa',
                 ])
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

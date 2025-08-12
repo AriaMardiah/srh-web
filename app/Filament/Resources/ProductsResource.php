@@ -80,6 +80,7 @@ class ProductsResource extends Resource
                 TextColumn::make('updated_at'),
 
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

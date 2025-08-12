@@ -8,7 +8,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-// TAMBAHKAN USE STATEMENT INI
 use App\Filament\Resources\LaporanResource\Pages;
 use App\Models\Orders;
 
@@ -29,11 +28,9 @@ class LaporanResource extends Resource
         return $table->columns([])->actions([])->bulkActions([]);
     }
 
-    // GANTI METHOD getPages() DENGAN YANG INI
     public static function getPages(): array
     {
-        return [
-            // Gunakan 'Pages' alias untuk merujuk ke halaman kita
+        return [    
             'index' => Pages\LaporanPenjualanProduk::route('/'),
         ];
     }

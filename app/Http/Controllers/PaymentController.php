@@ -59,13 +59,16 @@ class PaymentController extends Controller
 
         $transactionStatus = $data['transaction_status'] ?? null;
         $fraudStatus = $data['fraud_status'] ?? null;
+        $payment_type = $data['payment_type'] ?? null;
 
         if ($transactionStatus === 'capture') {
             if ($fraudStatus === 'accept') {
                 $payments->status_pembayaran = 'selesai';
+                $payments->metode_pembayaran = $payment_type;
             }
         } elseif ($transactionStatus === 'settlement') {
             $payments->status_pembayaran = 'selesai';
+            $payments->metode_pembayaran = $payment_type;
         } elseif ($transactionStatus === 'pending') {
             $payments->status_pembayaran = 'diproses';
         } elseif ($transactionStatus === 'expire') {

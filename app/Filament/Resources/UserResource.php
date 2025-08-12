@@ -39,6 +39,7 @@ class UserResource extends Resource
                 TextColumn::make('phoneNumber'),
                 TextColumn::make('address'),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])
