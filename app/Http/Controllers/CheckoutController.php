@@ -82,7 +82,15 @@ class CheckoutController extends Controller
 
                 // Kurangi stok dari tabel variasi
                 $variation = Stocks::find($item['variation_id']);
-                $variation->decrement('quantity', $item['quantity']);
+                // $variation->decrement('quantity', $item['quantity']);
+
+                Stocks::create([
+                    'product_id' => $item['product_id'],
+                    'color' => $variation->color,
+                    'size' => $variation->size,
+                    'quantity' => $item['quantity'],
+                    'status' => 'Keluar',
+                ]);
             }
 
             // 6. Logika untuk Metode Pembayaran Digital (Midtrans)

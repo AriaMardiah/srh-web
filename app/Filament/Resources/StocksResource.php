@@ -35,8 +35,9 @@ class StocksResource extends Resource
                     ->getOptionLabelFromRecordUsing(
                         fn($record) => $record->name
                     )
-                    ->reactive()
-                    ->required(),
+                    ->default(fn() => request()->query('product_id')) // ambil dari URL
+                    ->required()
+                    ->reactive(),
                 Select::make('status')
                     ->options([
                         'Masuk' => 'Masuk',
@@ -198,7 +199,7 @@ class StocksResource extends Resource
     {
         return [
             'index' => Pages\ListStocks::route('/'),
-            'create' => Pages\CreateStocks::route('/create'),
+            'create' => Pages\CreateStocks::    route('/create'),
             'edit' => Pages\EditStocks::route('/{record}/edit'),
         ];
     }

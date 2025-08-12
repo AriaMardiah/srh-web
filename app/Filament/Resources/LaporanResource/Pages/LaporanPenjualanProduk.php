@@ -4,7 +4,7 @@ namespace App\Filament\Resources\LaporanResource\Pages;
 
 use App\Models\Order_details;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Builder; // Impor Builder
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Filament\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -32,10 +32,6 @@ class LaporanPenjualanProduk extends ListRecords
         $this->reportData = collect();
     }
 
-    /**
-     * METHOD BARU: Pusat dari semua logika query.
-     * Method ini bisa digunakan kembali oleh fungsi lain.
-     */
     private function getReportQuery(): Builder
     {
         return Order_details::query()
@@ -53,9 +49,6 @@ class LaporanPenjualanProduk extends ListRecords
             ->orderByDesc('total_sales');
     }
 
-    /**
-     * DIPERBARUI: Sekarang hanya menggunakan method query.
-     */
     public function generateReport(): void
     {
         if (!$this->selectedMonth || !$this->selectedYear) {
