@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('model_request', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
-            $table->integer('user_id');
-            $table->unsignedInteger('total')->default(0);
-            $table->enum('status',['Belum Bayar', 'Dikemas', 'Dikirim', 'Selesai','Dibatalkan']);
+            $table->string('title',100);
+            $table->text('description');
+            $table->string('file')->nullable();
+            $table->enum('status',['diterima','ditolak','diproses']);
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('model_request');
     }
 };

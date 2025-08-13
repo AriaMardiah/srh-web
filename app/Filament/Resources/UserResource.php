@@ -18,7 +18,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-user';
     protected static ?string $label ='Customers';
 
     public static function form(Form $form): Form
@@ -39,6 +39,7 @@ class UserResource extends Resource
                 TextColumn::make('phoneNumber'),
                 TextColumn::make('address'),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

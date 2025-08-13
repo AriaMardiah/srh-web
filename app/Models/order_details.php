@@ -12,16 +12,21 @@ class Order_details extends Model
     protected $fillable = [
         'order_id',
         'product_id',
-        'stock_id',
         'quantity',
+        'color',
+        'size',
     ];
-
+    protected $casts = [
+        'quantity' => 'integer', // Pastikan 'quantity' selalu menjadi integer
+        'product_id' => 'integer',
+        'order_id' => 'integer',
+    ];
     /**
      * Relasi ke Order (setiap detail order milik satu order)
      */
     public function orders()
     {
-        return $this->belongsTo(Orders::class);
+        return $this->belongsTo(Orders::class,'order_id');
     }
 
     /**

@@ -11,18 +11,26 @@ class ProductsController extends Controller
     // Ambil semua produk
     // -------------------------------
     public function index()
-    {
-        $products = Products::all()->map(function ($product) {
+{
+    // Gunakan has('stocks') untuk memfilter di level database
+    $products = Products::has('stocks') // <-- HANYA AMBIL PRODUK YANG PUNYA RELASI 'stocks'
+        ->with('stocks') // <-- Tetap eager load untuk digunakan di accessor
+        ->latest() // <-- Sebaiknya tambahkan pengurutan
+        ->get()
+        ->map(function ($product) {
             return [
                 'id' => $product->id,
                 'name' => $product->name,
-                'images' => url('storage/' . $product->images),
                 'description' => $product->description,
-                'price' => (float) $product->price, // Ubah jadi float
+                'images' => url('storage/' . $product->images),
+                'price' => (int) $product->price,
+                'variations'  => $product->grouped_stok,
             ];
         });
-        return response()->json($products);
-    }
+
+    // Gunakan ->values() untuk memastikan hasilnya adalah array JSON, bukan objek
+    return response()->json($products->values());
+}
 
 
     // -------------------------------
@@ -95,7 +103,7 @@ class ProductsController extends Controller
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
-            'images' => $product->images,
+            'image' => $product->images,
             'description' => $product->description,
             'price' => (float) $product->price,
         ]);

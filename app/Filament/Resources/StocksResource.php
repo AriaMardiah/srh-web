@@ -24,7 +24,7 @@ class StocksResource extends Resource
     protected static ?string $model = Stocks::class;
 
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static ?string $label = 'Riwayat Stok';
     public static function form(Form $form): Form
     {
@@ -35,8 +35,9 @@ class StocksResource extends Resource
                     ->getOptionLabelFromRecordUsing(
                         fn($record) => $record->name
                     )
-                    ->reactive()
-                    ->required(),
+                    ->default(fn() => request()->query('product_id')) // ambil dari URL
+                    ->required()
+                    ->reactive(),
                 Select::make('status')
                     ->options([
                         'Masuk' => 'Masuk',
@@ -155,6 +156,7 @@ class StocksResource extends Resource
                     ]),
 
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('color')
                     ->label('Warna')
@@ -197,7 +199,7 @@ class StocksResource extends Resource
     {
         return [
             'index' => Pages\ListStocks::route('/'),
-            'create' => Pages\CreateStocks::route('/create'),
+            'create' => Pages\CreateStocks::    route('/create'),
             'edit' => Pages\EditStocks::route('/{record}/edit'),
         ];
     }

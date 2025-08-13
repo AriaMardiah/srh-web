@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('product_id');
             $table->integer('quantity');
             $table->string('color', 30);
-            $table->string('size',2);
+            $table->string('size',4);
             $table->enum('status',['Masuk','Keluar']);
             $table->timestamps();
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Products extends Model
 {
@@ -18,41 +19,49 @@ class Products extends Model
         'images',
         'description',
         'price',
+        'model_id',
     ];
 
     // Casting data
-    protected $casts = [
-        'price' => 'decimal:2',
-    ];
+    // protected $casts = [
+    //     'price' => 'integer',
+    // ];
+
+
     public function order_details()
     {
-        return $this->hasMany(order_details::class);
+        return $this->hasMany(order_details::class,'product_id');
     }
     public function stocks()
     {
-        return $this->hasMany(stocks::class,'product_id');
+        return $this->hasMany(stocks::class, 'product_id','id');
     }
     public function carts()
     {
         return $this->hasMany(carts::class);
     }
+    public function model()
+    {
+        return $this->belongsTo(ModelRequest::class,'model_id');
+    }
     public function getGroupedStokAttribute()
-{
-    return $this->stocks
-        ->groupBy(fn($item) => strtolower($item->color) . '-' . strtolower($item->size))
-        ->map(function ($group) {
-            $color = $group->first()->color;
-            $size  = $group->first()->size;
+    {
+        return $this->stocks
+            ->groupBy(fn($item) => strtolower($item->color) . '-' . strtolower($item->size))
+            ->map(function ($group) {
+                $firstItem = $group->first();
+                $color = $group->first()->color;
+                $size  = $group->first()->size;
 
-            $masuk  = $group->where(fn($s) => strtolower($s->status) === 'masuk')->sum('quantity');
-            $keluar = $group->where(fn($s) => strtolower($s->status) === 'keluar')->sum('quantity');
+                $masuk  = $group->where(fn($s) => strtolower($s->status) === 'masuk')->sum('quantity');
+                $keluar = $group->where(fn($s) => strtolower($s->status) === 'keluar')->sum('quantity');
 
-            return [
-                'color' => ucfirst(strtolower($color)),
-                'size' => strtoupper($size),
-                'stok_akhir' => $masuk - $keluar,
-            ];
-        })->values();
-}
-
+                return [
+                    'id' => $firstItem->id,
+                    'color' => ucfirst(strtolower($color)),
+                    'size' => strtoupper($size),
+                    'stock' => $masuk - $keluar,
+                ];
+            })->values();
+    }
 }

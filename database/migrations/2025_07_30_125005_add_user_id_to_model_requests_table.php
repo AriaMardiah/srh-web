@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
-            $table->integer('product_id');
-            $table->integer('user_id');
-            $table->tinyInteger('quantity');
-            $table->timestamps();
+        Schema::table('model_request', function (Blueprint $table) {
+            $table->integer('user_id')->nullable();
 
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
         });
     }
 
@@ -29,6 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carts');
+        Schema::table('model_request', function (Blueprint $table) {
+            // Hapus foreign key dan kolomnya jika migrasi di-rollback
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
+        });
     }
 };

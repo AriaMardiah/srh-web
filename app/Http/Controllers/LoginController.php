@@ -20,11 +20,24 @@ class LoginController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $user) {
+            return response()->json([
+                'message' => 'Tidak ada akun dengan email tersebut.'
+            ], 403);
+        }
+
+        if (! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Email atau password salah.'
             ], 401);
         }
+
+        if (is_null($user->email_verified_at)) {
+            return response()->json([
+                'message' => 'Silakan verifikasi email terlebih dahulu.'
+            ], 403);
+        }
+
 
         // Membuat token untuk API
         $token = $user->createToken('api-token')->plainTextToken;
