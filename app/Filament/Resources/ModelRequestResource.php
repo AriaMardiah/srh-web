@@ -38,6 +38,8 @@ class ModelRequestResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('Id Model'),
                 TextColumn::make('user.name')
                     ->label('Nama Pengguna'),
                 ImageColumn::make('file')

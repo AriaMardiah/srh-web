@@ -8,6 +8,7 @@ use App\Models\Products;
 use App\Models\Stocks;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -53,35 +54,74 @@ class OrderController extends Controller
     // }
 
     public function index(Request $request)
-{
-    // ... (validasi tidak berubah) ...
+    {
+        // ... (validasi tidak berubah) ...
 
-    $user = Auth::user();
-    $query = Orders::where('user_id', $user->id);
+        $user = Auth::user();
+        $query = Orders::where('user_id', $user->id);
 
-    if ($request->has('status')) {
-        $query->where('status', $request->status);
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // 1. TAMBAHKAN 'payment' KE DALAM EAGER LOADING
+        $orders = $query->with(['order_details.products', 'payments'])
+            ->latest()
+            ->get();
+
+
+        // 3. KEMBALIKAN DATA YANG SUDAH DIFORMAT
+        return response()->json($orders);
     }
+    public function cancel(Orders $order)
+    {
+        if (Auth::id() !== $order->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
-    // 1. TAMBAHKAN 'payment' KE DALAM EAGER LOADING
-    $orders = $query->with(['order_details.products', 'payments'])
-                     ->latest()
-                     ->get();
+        if (!in_array($order->status, ['Belum Bayar'])) {
+            return response()->json(['message' => 'Order ini tidak dapat dibatalkan.'], 422);
+        }
 
-    // 2. GUNAKAN 'map' UNTUK MENYUSUN ULANG DATA
-    $formattedOrders = $orders->map(function ($order) {
-        return [
-            'id' => $order->id,
-            'status' => $order->status,
-            'total' => $order->total,
-            'created_at' => $order->created_at,
-            // 'payment_method' => $order->payments->metode_pembayaran,
-            'order_details' => $order->order_details,
-        ];
-    });
+        return DB::transaction(function () use ($order) {
+            $order->status = 'Dibatalkan';
+            $order->save();
 
-    // 3. KEMBALIKAN DATA YANG SUDAH DIFORMAT
-    return response()->json($orders);
-}
+            $order->payments()->update(['status_pembayaran' => 'gagal']);
 
+            foreach ($order->order_details as $detail) {
+                $product = Products::find($detail->product_id);
+
+                if (!$product) {
+                    continue;
+                }
+
+                $groupedStokItem = $product->grouped_stok->first();
+                if (!$groupedStokItem) {
+                    continue;
+                }
+
+                $sourceStockId = $groupedStokItem['id'];
+
+                $sourceStock = Stocks::find($sourceStockId);
+
+                if ($sourceStock) {
+                    Stocks::create([
+                        'product_id' => $detail->product_id,
+                        'color'      => $sourceStock->color,
+                        'size'       => $sourceStock->size,
+                        'quantity'   => $detail->quantity,
+                        'status'     => 'Masuk',
+                    ]);
+                }
+            }
+
+
+
+            return response()->json([
+                'message' => 'Order berhasil dibatalkan dan stok telah dikembalikan.',
+                'order' => $order,
+            ]);
+        });
+    }
 }

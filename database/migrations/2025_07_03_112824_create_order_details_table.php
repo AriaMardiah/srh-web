@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer('product_id');
             $table->integer('order_id');
             $table->integer('quantity');
+            $table->string('color', 30);
+            $table->string('size',4);
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');

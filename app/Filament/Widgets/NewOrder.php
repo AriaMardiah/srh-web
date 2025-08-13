@@ -16,7 +16,7 @@ class NewOrder extends BaseWidget
 
     protected function isSearchable(): bool
     {
-        return false; // hilangkan fitur pencarian
+        return false;
     }
 
     public function table(Table $table): Table

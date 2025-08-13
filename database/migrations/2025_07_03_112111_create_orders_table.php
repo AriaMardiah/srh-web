@@ -15,7 +15,7 @@ return new class extends Migration
             $table->integer('id')->autoIncrement();
             $table->integer('user_id');
             $table->unsignedInteger('total')->default(0);
-            $table->enum('status',['Belum Bayar', 'Dikemas', 'Dikirim', 'Selesai']);
+            $table->enum('status',['Belum Bayar', 'Dikemas', 'Dikirim', 'Selesai','Dibatalkan']);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

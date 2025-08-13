@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/user', [UpdateProfileController::class, 'update']);
     Route::get('/orders', [OrderController::class, 'index']);
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
     Route::get('/requests', [ProductRequestController::class, 'index']);
     Route::get('/requests/products', [ProductRequestController::class, 'getProductsFromRequests']);
     Route::post('/requestsmodel', action: [ProductRequestController::class, 'store']);

@@ -73,10 +73,13 @@ class CheckoutController extends Controller
 
             // 5. Buat Order Details dan catat pergerakan stok
             foreach ($items as $item) {
+                // dd($item['variation_id']);
                 $order->order_details()->create([
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'order_id' => $order->id,
+                    'color' => $item['color'],
+                    'size' => $item['size'],
 
                 ]);
 
@@ -143,4 +146,8 @@ class CheckoutController extends Controller
             ], 201);
         });
     }
+
+
+
+
 }

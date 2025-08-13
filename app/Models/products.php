@@ -30,7 +30,7 @@ class Products extends Model
 
     public function order_details()
     {
-        return $this->hasMany(order_details::class);
+        return $this->hasMany(order_details::class,'product_id');
     }
     public function stocks()
     {

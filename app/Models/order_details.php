@@ -13,6 +13,8 @@ class Order_details extends Model
         'order_id',
         'product_id',
         'quantity',
+        'color',
+        'size',
     ];
     protected $casts = [
         'quantity' => 'integer', // Pastikan 'quantity' selalu menjadi integer

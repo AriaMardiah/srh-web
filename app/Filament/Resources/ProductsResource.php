@@ -30,7 +30,13 @@ class ProductsResource extends Resource
         return $form
             ->schema([
                 TextInput::make('model_id')
-                    ->default(fn() => request()->query('model_id')),
+                    ->default(fn() => request()->query('model_id'))
+                    ->visible(function ($get, $livewire) {
+                        $requestHasModelId = request()->has('model_id');
+                        $recordModelId = optional($livewire->getRecord())->model_id;
+
+                        return $requestHasModelId || !is_null($recordModelId);
+                    }),
                 TextInput::make('name')
                     ->label('Nama Produk')
                     ->required()
@@ -75,6 +81,9 @@ class ProductsResource extends Resource
                 TextColumn::make('model.user.name')
                     ->label('Di request oleh')
                     ->default(fn($record) => $record->model->user->name ?? 'Admin'),
+                TextColumn::make('model.id')
+                    ->label('Id Model')
+                    ->default(fn($record) => $record->model->id ?? '-'),
 
                 TextColumn::make('created_at'),
                 TextColumn::make('updated_at'),
